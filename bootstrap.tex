@@ -4,7 +4,8 @@
 \usepackage{appendixnumberbeamer}
 \usepackage{booktabs}
 \usepackage[scale=2]{ccicons}
-
+\usepackage{listings}
+\usepackage{spot}
 \usepackage{pgfplots}
 \usepgfplotslibrary{dateplot}
 
@@ -67,16 +68,19 @@
 \begin{frame}
 \frametitle{Previously: Calculating Confidence Intervals}
 
+\uncover<2->{\textbf{Statistics:} science of uncertainty, \uncover<3->{and CIs are our most important tool}}
 
-\uncover<2->{\textbf{95\% Confidence Interval:} \uncover<3->{ If we construct 100 such intervals, 95\% will contain the truth}}
 
-\uncover<4->{\textbf{Procedure:}}
+\uncover<4->{\textbf{95\% Confidence Interval:} \uncover<5->{ If we construct 100 such intervals, 95\% will contain the truth}}
+
+\uncover<6->{\textbf{Procedure:}}
 \begin{enumerate}
-	\item<5->{Calculate a quantity of interest, \textbf{X}}
-	\item<6->{Calculate a standard deviation, \textbf{$s$}}
-	\item<7->{Calculate a standard \textbf{error} \textbf{$\sigma$}: $\frac{s}{\sqrt{n}}$} 
-	\item<8->{Use a Z-table to figure out how many SEs you need \uncover<9->{(1.96 for 95\%, 2.58 for 99\%)}}
-	\item<10->{For 95\%: $[X - 1.96 \times \sigma, X + 1.96 \times \sigma]$}
+	\item<7->{Collect a sample of data from the population}
+	\item<8->{Calculate a quantity of interest, \textbf{X}}
+	\item<9->{Calculate a standard deviation, \textbf{$s$}}
+	\item<10->{Calculate a standard \textbf{error} \textbf{$\sigma$}: $\frac{s}{\sqrt{n}}$} 
+	\item<11->{Use a Z-table to figure out how many SEs you need \uncover<12->{(1.96 for 95\%, 2.58 for 99\%)}}
+	\item<13->{For 95\%: $[X - 1.96 \times \sigma, X + 1.96 \times \sigma]$}
 \end{enumerate}
 
 \end{frame}
@@ -87,39 +91,27 @@
 \begin{frame}
 \frametitle{Previously: Calculating Confidence Intervals}
 
-\textbf{Example: \uncover<2->{What percentage of adult US citizens are registered to vote?}}
-\uncover<3->{\textbf{Data:} \uncover<4->{2016 American National Election Study (4,142 US adults)}}
+\uncover<2->{\textbf{Data:} \uncover<3->{2016 American National Election Study (4,142 US adults)}}
+
+\uncover<2->{\textbf{Example:} \uncover<4->{What percentage of adult US residents are registered to vote?}}
+
 
 \begin{enumerate}
 	\item<5->{\textbf{Average:} 85.7\%}
 	\item<6->{\textbf{Standard Deviation:} 35.0\%}
-	\item<7->{\textbf{Standard Error:} $\frac{34.9}{\sqrt{4,142}} = $ 0.5\%}
-	\item<8->{\textbf{95\% Confidence Interval:} $[85.8 - 1.96\times 0.5, 85.8 + 1.96\times 0.5] = $ [84.6\%, 86.8\%]}
+	\item<7->{\textbf{Standard Error:} $\frac{34.9}{\sqrt{4,142}} =  0.5$\%}
+	\item<8->{\textbf{95\% Confidence Interval:} $[85.7 - 1.96\times 0.5, 85.7 + 1.96\times 0.5] = $ [84.6\%, 86.8\%]}
 \end{enumerate} 
 
 \uncover<9->{\textbf{Interpretation?}}
 \uncover<10->{If we take 100 samples of 4,142 voters and construct 95\% CIs, then 95\% of them will contain the true percentage of (self-reported) registered voters}
 
+\uncover<11->{\textbf{This is a pain!}}
+
+
 \end{frame}
 
 %% What this gives us is a way to quantify the uncertainty around our average. Where does this uncertainty come from? It comes from the fact that we don't have ALL the data, we only have a sample.
-
-\begin{frame}
-\frametitle{Why does this work?}
-
-\uncover<2->{If a (representative) sample statistic has a 95\% chance of being within 1 margin of error of the true parameter...}
-
-\uncover<3->{...then we are 95\% confident that the true parameter is within 1 margin of error of our sample statistic!}
-
-
-
-% Verbally: Sometimes there is more than one source of randomness! And sometimes we don't know for sure. Sometimes it's the treatment assignment, and sometimes it's the potential outcomes.
-
-% So sometimes this analytic CI interval will fail! When might that be? When the sample isn't representative of the population! 
-% It isn't the normal distributional assumption -- the sampling distribution of the sample mean is always normal under the Central Limit Theorem
-
-\end{frame}
-
 
 
 %% But we can't always do this. Not only do we want to avoid math if we can, but sometimes we have more complicated things we want confidence intervals for and we can't simply assume a normal distribution. 
@@ -130,19 +122,24 @@
 \begin{frame}
 \frametitle{An Alternative Approach: The Bootstrap}
 
-\textbf{Why Bootstrap?}
-\begin{itemize}
-	\item<2-> Doing less math is better % The math is easy above, but it gets much harder quickly
-	\item<3-> Sometimes the math won't work % Sometimes the process we'd like a CI for is really really complicated
-\end{itemize}
 
-\uncover<4->{\textbf{Bootstrap:} \uncover<5->{A computational solution to confidence intervals \uncover<6->{(much less math)}}}
+\uncover<2->{\textbf{Bootstrap:} \uncover<3->{A computational solution to confidence intervals \uncover<4->{(much less math)}}}
 
 \begin{enumerate}
-	\item<7->{\textbf{Resample:}\uncover<8->{ resample the original data \textit{with replacement}}}
-	\item<9->{\textbf{Recalculate:}\uncover<10->{ recalculate the original statistic of interest \textit{for each resample}}}
-	\item<11->{\textbf{Find Quantiles:}\uncover<12->{ take the 2.5\% and 97.5\% quantiles of the bootstrapped statistics}}
+	\item<5->{\textbf{Resample:}\uncover<6->{ resample the original data \textit{with replacement}}}
+	\item<7->{\textbf{Recalculate:}\uncover<8->{ recalculate the original statistic of interest \textit{for each resample}}}
+	\item<9->{\textbf{Find Quantiles:}\uncover<10->{ take the 2.5\% and 97.5\% quantiles of the bootstrapped statistics}}
 \end{enumerate}
+
+
+
+\uncover<11->{\textbf{Why sample with replacement?}}
+\begin{itemize}
+	\item<12-> We need variation in the quantity of interest
+	\item<13-> Sampling without replacement \uncover<14->{$\leadsto$ identical samples \uncover<15->{$\leadsto$ \textcolor{red}{same QOI every time!}}}
+\end{itemize}
+
+
 
 \end{frame}
 
@@ -152,15 +149,21 @@
 \begin{frame}
 \frametitle{The Bootstrap: Terminology}
 
+% Add \hspace{-.125in}
 \centering
 \only<2>{\includegraphics[width=.75\textwidth]{sample1.JPG}}
-\only<3>{\includegraphics[width=.75\textwidth]{sample2.JPG}}
-\only<4>{\includegraphics[width=.75\textwidth]{sample3.JPG}}
-\only<5>{\includegraphics[width=.75\textwidth]{flowchart1.JPG}}
-\only<6>{\includegraphics[width=.75\textwidth]{flowchart2.JPG}}
-\only<7>{\includegraphics[width=.75\textwidth]{flowchart3.JPG}}
-\only<8>{\includegraphics[width=.75\textwidth]{flowchart4.JPG}}
-\only<9>{\includegraphics[width=.75\textwidth]{flowchart5.JPG}}
+\only<3>{\textbf{What is the CI for the average height?}}
+\only<4>{\hspace{-.055in}\includegraphics[width=.75\textwidth]{sample2.JPG}}
+\only<5>{\hspace{-.1in}\includegraphics[width=.75\textwidth]{sample3.JPG}}
+\only<6>{\includegraphics[width=.75\textwidth]{flowchart1.JPG}}
+\only<7>{\hspace{-.05in}\includegraphics[width=.75\textwidth]{flowchart2.JPG}}
+\only<8>{\hspace{-.105in}\includegraphics[width=.75\textwidth]{flowchart3.JPG}}
+\only<9>{\hspace{-.16in}\includegraphics[width=.75\textwidth]{flowchart4.JPG}}
+\only<10>{\hspace{-.215in}\includegraphics[width=.75\textwidth]{flowchart5.JPG}}
+\only<11>{\hspace{-.27in}\includegraphics[width=.75\textwidth]{flowchart6.JPG}}
+\only<12>{\hspace{-.325in}\includegraphics[width=.75\textwidth]{flowchart7.JPG}}
+\only<13>{\hspace{-.38in}\includegraphics[width=.75\textwidth]{flowchart8.JPG}}
+\only<14>{\hspace{-.435in}\includegraphics[width=.55\textwidth]{bootdist1.JPG}}
 
 
 
@@ -168,25 +171,151 @@
 }
 
 
-%[Move to R Studio]
-%% Here is a big political science data set in R Studio.
-%% If we wanted to calculate the turnout rate in our sample, we could do it the analytic way:
-%% Take the mean of the variable identifying voter turnout, calculate the SD, then construct the interval. 
-%% But we could also do it with the bootstrap:
-%% We sample our data with replacement 100 times, and get a VECTOR of potential turnout rates. Then we can take the 0.025 and 0.975 quantiles of this distribution (so that 95\% of the data are in the middle), and that's ANOTHER approach to calculate a confidence interval, no math required.
+\begin{frame}[fragile]
+\ttfamily
+\frametitle{R Coding: The American National Election Study}
+
+\only<2-5>{
+\uncover<2->{
+X = mean(anes16\$registered)\\
+X   \# 0.857\\
+}
+\vspace{.1in}
+\uncover<3->{
+SD = sd(anes16\$registered)\\
+SD   \# 0.350\\
+}
+\vspace{.1in}
+\uncover<4->{
+SE = SD/sqrt(nrow(anes16))\\
+SE   \# 0.005\\
+}
+\vspace{.1in}
+\uncover<5->{
+X + 1.96*SE   \# 0.868\\
+X - 1.96*SE   \# 0.848\\
+}}
+
+\only<6-14>{
+
+\uncover<11->{
+\textcolor{blue}{bootstrapped.distribution = \spot<11>{replicate}(\spot<12>{100}, \texttt{\{}
+}}\\
+\uncover<6->{
+\hspace{.2in} bootstrapped.sample = \spot<7>{mosaic::shuffle}(\spot<8>{anes16}, \spot<9>{replace=TRUE})
+}\\
+\uncover<6->{
+\hspace{.2in} \spot<10>{mean}(bootstrapped\$registered) \\
+}
+\uncover<11->{
+\textcolor{blue}{\texttt{\}})}\\
+}
+\uncover<13->{
+\textcolor{junglegreen}{
+quants = \spot<13>{quantile}(bootstrapped.distribution, c(0.025, 0.975))\\
+quants} \# 0.846, 0.867
+}
+
+\vspace{.3in}
+
+\uncover<14->{
+\textsf{\textbf{How many bootstrapped samples do we generate?}}
+}
+}
+
+\only<15>{
+\centering
+\hspace{.525in}\includegraphics[width=0.55\textwidth]{hist1.jpg}
+}
+\only<16>{
+\centering
+\hspace{.45in}\includegraphics[width=0.55\textwidth]{hist2.jpg}
+}
+\only<17>{
+\centering
+\hspace{.35in}\includegraphics[width=0.55\textwidth]{hist3.jpg}
+}
+
+\only<18>{
+\textsf{But we can also bootstrap more complicated stuff!}\\
+\vspace{.2in}
+\textcolor{junglegreen}{cor(anes16\$age, anes16\$registered)} \# 0.199 
+}
 
 
 
-%% But we can use the bootstrap for more than just averages too!
+\only<19-24>{
 
-%% Here is what it looks like it we try to visualize the relationship between age and turnout:
-%% As you've already learned, we could quantify this relationship using a regression, and get a confidence interval from that regression.
-% [regression here]
-%% But you may not know that the regression calculates its standard errors using lots of matrix algebra and partial derivates, which we'd REALLY like to not have to do.
-%% But you can bootstrap that too!
+\uncover<23->{
+\textcolor{blue}{bootstrapped.corr = replicate(100, \texttt{\{}
+}}\\
+\uncover<19->{
+\hspace{.2in} bootstrapped.sample = mosaic::shuffle(anes16,replace=TRUE)
+}\\
+\uncover<20->{
+\hspace{.2in} \spot<21>{cor}(bootstrapped.sample\$registered, \spot<22>{bootstrapped.sample\$age}) \\
+}
+\uncover<23->{
+\textcolor{blue}{\texttt{\}})}\\
+}
+\uncover<24->{
+\textcolor{junglegreen}{
+corrs = \spot<24>{quantile}(bootstrapped.corr, c(0.025, 0.975))\\
+corrs} \# 0.173, 0.230
+}
+}
+\end{frame}
 
-%% Here's how we do it: we sample the data set, and each time, we run the regression and extract the coefficient.
-%% Then, same as before, we can take the quantiles of that distribution and get a confidence interval!
+
+
+\begin{frame}
+\frametitle{Even more complicated stuff}
+\only<1>{
+\includegraphics[width = .9\textwidth]{decisiondesk.jpg}
+}
+
+\only<2-5>{
+
+\textbf{How do they ``call'' an election?} How do they call elections with only 1\% of the data?
+
+\begin{itemize}
+\item<3->{Build a model to predict the election}
+\item<4->{How do calculate uncertainty?}
+\item<5->{\textbf{Bootstrap!}}
+\end{itemize}
+
+}
+
+
+\only<6-20>{
+
+\textbf{When can we ``call'' an election?}  \uncover<7->{When 99\% CI only contains one winner} 
+
+\vspace{.1in}
+\uncover<8->{
+\textcolor{blue}{bootstrapped.corr = replicate(100, \texttt{\{}
+}}\\
+\uncover<9->{
+\hspace{.2in} bootstrapped.sample = mosaic::shuffle(\spot<10>{election.returns},replace=TRUE)
+}\\
+\uncover<11->{
+\hspace{.2in} model = \spot<12>{lm}(\spot<13>{DemWins18} $\sim$ \spot<14>{VoteSoFar} + \spot<15>{DemPct16} + pctWhite, \\ 
+\hspace{.4in} bootstrapped.sample)
+}\\
+\uncover<16->{
+\hspace{.2in} preds = \spot<17>{predict}(m, newdata = data.frame(\spot<18>{VoteSoFar = 0.65}, \\
+\hspace{.4in} \spot<19>{DemPct16 = 0.75}, \spot<20>{pctWhite = 0.4}) 
+}\\
+\uncover<8->{
+\textcolor{blue}{\texttt{\}})}\\
+}
+}
+
+
+
+\end{frame}
+
+
 
 
 %% Summary slide:
@@ -200,28 +329,22 @@
 % 2) The replicate() function repeats a snippet of code however many times you want
 % 3) calculate quantiles: quantile(bootstrapped.avgs, c(0.025, 0.975))
 
-\begin{frame}
-\frametitle{R Coding: The American National Election Study}
-
-
-\end{frame}
-
 
 \begin{frame}
 \frametitle{Summary \& Coding tips}
 
 \uncover<2->{\textbf{The bootstrap...}}
 \begin{enumerate}
-	\item<3->{Is useful when analytic approaches fail (or when we are feeling lazy)}
-	\item<4->{Involves resampling the full data \alert{with replacement}}
-	\item<5->{Works for complicated sample statistics too}
+	\item<3->{Involves resampling the full data \alert{with replacement}}
+	\item<4->{Is useful when analytic approaches fail (or when we are feeling lazy)}
+	\item<5->{Works for complicated sample statistics too: \uncover<6->{correlations,}\uncover<7->{ predictions,}\uncover<8->{ modeling accuracy...}} 
 \end{enumerate}
 
-\uncover<6->{\textbf{To make it easier...}}
+\uncover<9->{\textbf{To make it easier...}}
 \begin{itemize}
-	\item<7->{Use the \texttt{replicate()} function to repeat your resampling lots of times}
-	\item<8->{Use the \texttt{shuffle()} function from the \texttt{mosaic} library: \uncover<9->{\texttt{mosaic::shuffle(dat, replace=FALSE)}}}
-	\item<10->{Calculate quantiles: \uncover<11->{\texttt{quantile(bootstrapped.avgs, c(0.025, 0.975))}}}
+	\item<10->{Use the \texttt{replicate()} function to repeat your resampling lots of times}
+	\item<11->{Use the \texttt{shuffle()} function from the \texttt{mosaic} library: \uncover<12->{\texttt{mosaic::shuffle(dat, replace=FALSE)}}}
+	\item<13->{Calculate quantiles: \uncover<14->{\texttt{quantile(bootstrapped.avgs, c(0.025, 0.975))}}}
 \end{itemize}
 \end{frame}
 

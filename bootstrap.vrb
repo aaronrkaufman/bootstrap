@@ -1,0 +1,92 @@
+\ttfamily
+\frametitle{R Coding: The American National Election Study}
+
+\only<2-5>{
+\uncover<2->{
+X = mean(anes16\$registered)\\
+X   \# 0.857\\
+}
+\vspace{.1in}
+\uncover<3->{
+SD = sd(anes16\$registered)\\
+SD   \# 0.350\\
+}
+\vspace{.1in}
+\uncover<4->{
+SE = SD/sqrt(nrow(anes16))\\
+SE   \# 0.005\\
+}
+\vspace{.1in}
+\uncover<5->{
+X + 1.96*SE   \# 0.868\\
+X - 1.96*SE   \# 0.848\\
+}}
+
+\only<6-14>{
+
+\uncover<11->{
+\textcolor{blue}{bootstrapped.distribution = \spot<11>{replicate}(\spot<12>{100}, \texttt{\{}
+}}\\
+\uncover<6->{
+\hspace{.2in} bootstrapped.sample = \spot<7>{mosaic::shuffle}(\spot<8>{anes16}, \spot<9>{replace=TRUE})
+}\\
+\uncover<6->{
+\hspace{.2in} \spot<10>{mean}(bootstrapped\$registered) \\
+}
+\uncover<11->{
+\textcolor{blue}{\texttt{\}})}\\
+}
+\uncover<13->{
+\textcolor{junglegreen}{
+quants = \spot<13>{quantile}(bootstrapped.distribution, c(0.025, 0.975))\\
+quants} \# 0.846, 0.867
+}
+
+\vspace{.3in}
+
+\uncover<14->{
+\textsf{\textbf{How many bootstrapped samples do we generate?}}
+}
+}
+
+\only<15>{
+\centering
+\hspace{.525in}\includegraphics[width=0.55\textwidth]{hist1.jpg}
+}
+\only<16>{
+\centering
+\hspace{.45in}\includegraphics[width=0.55\textwidth]{hist2.jpg}
+}
+\only<17>{
+\centering
+\hspace{.35in}\includegraphics[width=0.55\textwidth]{hist3.jpg}
+}
+
+\only<18>{
+\textsf{But we can also bootstrap more complicated stuff!}\\
+\vspace{.2in}
+\textcolor{junglegreen}{cor(anes16\$age, anes16\$registered)} \# 0.199
+}
+
+
+
+\only<19-24>{
+
+\uncover<23->{
+\textcolor{blue}{bootstrapped.corr = replicate(100, \texttt{\{}
+}}\\
+\uncover<19->{
+\hspace{.2in} bootstrapped.sample = mosaic::shuffle(anes16,replace=TRUE)
+}\\
+\uncover<20->{
+\hspace{.2in} \spot<21>{cor}(bootstrapped.sample\$registered, \spot<22>{bootstrapped.sample\$age}) \\
+}
+\uncover<23->{
+\textcolor{blue}{\texttt{\}})}\\
+}
+\uncover<24->{
+\textcolor{junglegreen}{
+corrs = \spot<24>{quantile}(bootstrapped.corr, c(0.025, 0.975))\\
+corrs} \# 0.173, 0.230
+}
+}
